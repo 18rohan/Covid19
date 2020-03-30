@@ -58,23 +58,23 @@ df = df.drop("Sno", axis = 1)
 
 #Importing data from healthcare.Gov.in website
 df2 = pd.read_html("https://www.mohfw.gov.in")
-covid_df1 = df2[7]
+covid_df1 = df2[9]
 covid_df1.reset_index(inplace = True)
 covid_df1.set_index("S. No.", inplace = True, drop = True)
 covid_df1 = covid_df1.drop("index", axis = 1)
-covid_df = covid_df1.iloc[0:21]
+covid_df = covid_df1.iloc[0:26]
 
 #converting the "Cases" columns to int
-covid_df['Total Confirmed cases ( Foreign National )']=covid_df['Total Confirmed cases ( Foreign National )'].astype(int)
-covid_df['Total Confirmed cases (Indian National)']=covid_df['Total Confirmed cases (Indian National)'].astype(int)
+# )']=covid_df['Total Confirmed cases ( Foreign National )'].astype(int)
+covid_df['Total Confirmed cases']=covid_df['Total Confirmed cases *'].astype(int)
 
 #adding a new column - TotalCases
-covid_df['TotalCases'] = covid_df['Total Confirmed cases ( Foreign National )'] + covid_df['Total Confirmed cases (Indian National)']
+#covid_df['TotalCases'] = covid_df['Total Confirmed cases ( Foreign National )'] + covid_df['Total Confirmed cases (Indian National)']
 
 #Data for pie chart
-df_pie = pd.DataFrame(covid_df['Total Confirmed cases ( Foreign National )'])
-df_pie['Total Confirmed cases (Indian National)'] = covid_df['Total Confirmed cases (Indian National)']
-data1 = covid_df1.loc['Total number of confirmed cases in India']['Total Confirmed cases (Indian National)']
+df_pie = pd.DataFrame(covid_df['Total Confirmed cases'])
+#df_pie['Total Confirmed cases'] = covid_df['Total Confirmed cases']
+data1 = covid_df1.loc['Total number of confirmed cases in India']['Total Confirmed cases *']
 
 
 if type(data1) == np.int64:
@@ -89,14 +89,14 @@ else:
 
 
 #data1 = int(data1_f)
-data2 = covid_df1.loc['Total number of confirmed cases in India']['Total Confirmed cases ( Foreign National )']
+#data2 = covid_df1.loc['Total number of confirmed cases in India']['Total Confirmed cases ( Foreign National )']
 
-if type(data2) == np.int64:
-    data2_f = int(data2)
-else:
-    data2_n = getNumbers(data2)
-    for i in data2_n:
-        data2_f = int(i)
+#if type(data2) == np.int64:
+#    data2_f = int(data2)
+#else:
+#    data2_n = getNumbers(data2)
+#    for i in data2_n:
+#        data2_f = int(i)
 
 
 
@@ -176,16 +176,16 @@ final_pd.at['Ebola','Total cases'] = 28000
 final_pd = final_pd.drop(["Swine Flu H1N1 2009","Norovirus","Pneumonia","Malaria","Shigellosis","Chicken Pox","Hepatitis B","Hepatitis A","Dengue Fever"], axis = 0) 
 
 #Total Coronavirus cases-Worldwide
-data10 = pd.read_html("https://www.worldometers.info/coronavirus/")
+#data10 = pd.read_html("https://www.worldometers.info/coronavirus/")
 
-world_covid = data10[0]
+#world_covid = data10[0]
 
 
-world_covid = world_covid.drop(['NewCases'],axis = 1) 
-world_covid = world_covid.drop(['NewDeaths','Tot\xa0Cases/1M pop'],axis = 1) 
-world_covid.set_index("Country,Other",inplace = True, drop = True)
-world_covid = world_covid.fillna(0)
-final_world_covid = world_covid[0:50]
+#world_covid = world_covid.drop(['NewCases'],axis = 1)
+#world_covid = world_covid.drop(['NewDeaths','Tot\xa0Cases/1M pop'],axis = 1)
+#world_covid.set_index("Country,Other",inplace = True, drop = True)
+#world_covid = world_covid.fillna(0)
+#final_world_covid = world_covid[0:50]
 
 
 
@@ -211,10 +211,30 @@ app.layout = html.Div(style={'background-color':colors['background'],'color':'bl
     
 	
 	])
-	
-   
-  
+@app.callback(Output('tabs-content-example', 'children'),
+              [Input('tabs-example', 'value')]
+              #Output('economy', 'figure'),
+    		  #[Input('stock-input', 'value')]
 
+              )
+
+#def update_fig(input_values):
+#	data =[]
+#	trace_close = go.Scatter(x = list(df.index), y=list(df.Close)
+#		,name = 'Close')
+#	data.append(trace_close)
+#
+#	layout = {
+#			'title':'Stoncks graphs'
+#
+#
+#	}
+#
+#	return {
+#	'data':data,
+#	'layout':layout
+#
+#	}
 
 def render_content(tab):
     if tab == 'tab-1-example':
@@ -259,7 +279,7 @@ def render_content(tab):
         style = {
         'height': 500,
         'width': 700
-        
+
                 },
         figure={
             'data': [
@@ -289,7 +309,7 @@ def render_content(tab):
             "data": [
                 {
                     "labels": ['Indians','Foreigners'],
-                    "values": [data1_f,data2_f],
+                    "values": [49,data1_f],
 			"type": "pie",
                    "marker": {"line": {"color": "#111110", "width": 1}},
                   "hoverinfo": ['data1','data2'],
@@ -310,8 +330,8 @@ def render_content(tab):
     ],className= "five columns")
    ], className = "row")
 
-#Pie chart for number of Indian nationals and foreign Nationals	
-    
+#Pie chart for number of Indian nationals and foreign Nationals
+
 
 
 ])
@@ -388,39 +408,12 @@ def render_content(tab):
 
 		}
     )
-       
 
-            
+
+
         ], className = "six columns")
         ], className = "row")
-]) 
-
-
-
-@app.callback(Output('tabs-content-example', 'children'),
-              [Input('tabs-example', 'value')],
-              Output('economy', 'figure'),
-    		  [Input('stock-input', 'value')]
-
-              )
-
-def update_fig(input_values):
-	data =[]
-	trace_close = go.Scatter(x = list(df.index), y=list(df.Close)
-		,name = 'Close')
-	data.append(trace_close)
-
-	layout = {
-			'title':'Stoncks graphs'
-
-
-	}
-
-	return {
-	'data':data,
-	'layout':layout
-
-	}
+])
 
 
 
